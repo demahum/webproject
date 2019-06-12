@@ -13,7 +13,7 @@ Flight::route('/', function(){
     ';
 
     $host = 'localhost';
-    $db   = 'forum';
+    $db   = 'notes';
     $user = 'newuser';
     $pass = 'password';
     $charset = 'utf8mb4';
@@ -30,12 +30,12 @@ Flight::route('/', function(){
          throw new \PDOException($e->getMessage(), (int)$e->getCode());
     }
     $dom->loadHTML($list);
-            $stmt = $pdo->query('SELECT * FROM posts');
+            $stmt = $pdo->query('SELECT * FROM notes');
             while ($row = $stmt->fetch())
             {
 
                 $dom->getElementsByTagName('ol')->item(0)->insertBefore(
-                  $dom->createElement('li', $row['title'])
+                  $dom->createElement('li', $row['content'])
                 );
             }
 
@@ -79,7 +79,7 @@ Flight::route('/notes/new', function(){
         $tutorials_dom->appendChild($home_input_form);
 
         $host = 'localhost';
-        $db   = 'forum';
+        $db   = 'notes';
         $user = 'newuser';
         $pass = 'password';
         $charset = 'utf8mb4';
@@ -95,8 +95,8 @@ Flight::route('/notes/new', function(){
         } catch (\PDOException $e) {
              throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
-        $stmt = $pdo->prepare('INSERT INTO posts (title, content, author, submission_date) VALUES (?,?,?, CURRENT_DATE())');
-        $stmt->execute([$_POST["title"], "no_content", "no_author"]);
+        $stmt = $pdo->prepare('INSERT INTO notes (content, submission_date) VALUES (?, CURRENT_DATE())');
+        $stmt->execute([$_POST["content"]]);
 
         echo "Your note has been saved.";
         echo $tutorials_dom->saveHTML();
@@ -120,7 +120,7 @@ Flight::route('/notes/new', function(){
     $domAttributeGold->value = 'text';
     $input->appendChild($domAttributeGold);
     $domAttributeGold = $tutorials_dom->createAttribute('name');
-    $domAttributeGold->value = 'title';
+    $domAttributeGold->value = 'content';
     $input->appendChild($domAttributeGold);
     $input_form->appendChild($input);
     $br = $tutorials_dom->createElement('br');
